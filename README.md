@@ -1,5 +1,6 @@
 CARRERA DE CABALLOS (CINE)
 
+```
 1. Crear entorno virtual de python (desde carpeta de proyecto):
 python -m venv .venv
 
@@ -8,3 +9,4 @@ python -m venv .venv
 
 3. Instalar dependencias:
 pip install -r requirements.txt
+```
