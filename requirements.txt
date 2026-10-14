@@ -23,6 +23,7 @@ numpy==2.5.4
 pillow==12.3.0
 pycairo==1.29.2
 pydub==0.25.1
+pygame-ce==2.5.8
 pyglet==2.1.19
 pyglm==2.8.3
 Pygments==2.21.0
