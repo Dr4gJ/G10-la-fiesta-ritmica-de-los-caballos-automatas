@@ -11,7 +11,7 @@ from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
 LARGO_PISTA = 15
-INTERVALO_MS = 1200          # tiempo entre beats
+INTERVALO_MS = 1000          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
 TECLAS_PYGAME = {"LEFT": pygame.K_LEFT, "UP": pygame.K_UP,
                  "RIGHT": pygame.K_RIGHT, "DOWN": pygame.K_DOWN}
