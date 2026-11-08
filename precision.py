@@ -1,0 +1,24 @@
+"""Precisión rítmica. PERSONA 3.
+
+Convierte el timing del jugador en 'F'|'M'|'B'|'E'. Tiempos en milisegundos.
+Los umbrales son ajustables: documentar los finales en el informe.
+"""
+
+UMBRAL_E = 50    # |error| <= 50 ms  -> Excelente
+UMBRAL_B = 150   # <= 150 ms        -> Bueno
+UMBRAL_M = 300   # <= 300 ms        -> Malo
+                 # más que eso o tecla incorrecta -> Fallo
+
+
+def evaluar(t_input, t_objetivo, tecla_ok=True):
+    """Devuelve 'F', 'M', 'B' o 'E'."""
+    if not tecla_ok:
+        return "F"
+    error = abs(t_input - t_objetivo)
+    if error <= UMBRAL_E:
+        return "E"
+    if error <= UMBRAL_B:
+        return "B"
+    if error <= UMBRAL_M:
+        return "M"
+    return "F"
