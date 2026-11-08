@@ -10,7 +10,7 @@ from beats import generar_beat
 from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
-LARGO_PISTA = 8
+LARGO_PISTA = 15
 INTERVALO_MS = 1200          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
 TECLAS_PYGAME = {"LEFT": pygame.K_LEFT, "UP": pygame.K_UP,
@@ -22,6 +22,7 @@ def nueva_carrera():
         Caballo("Vos", (230, 230, 60), LARGO_PISTA),
         Caballo("Bot 1", (230, 80, 80), LARGO_PISTA, bot=True, habilidad=0.4),
         Caballo("Bot 2", (80, 120, 230), LARGO_PISTA, bot=True, habilidad=0.6),
+        Caballo("Bot 3", (80, 230, 120), LARGO_PISTA, bot=True, habilidad=0.7)
     ]
 
 
