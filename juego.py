@@ -39,8 +39,8 @@ def main():
 
     caballos = nueva_carrera()
     jugador = caballos[0]
-    t0 = pygame.time.get_ticks() + 2000       # TODO (P4): cuenta regresiva
-    beat = generar_beat(t0)
+    t0 = pygame.time.get_ticks() + 2000 # TODO (P4): cuenta regresiva
+    beat = generar_beat(t0, t0 + INTERVALO_MS) 
     ganador = None
     corriendo = True
 
@@ -53,7 +53,7 @@ def main():
                 corriendo = False
             elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_r and ganador:
                 caballos = nueva_carrera(); jugador = caballos[0]
-                beat = generar_beat(pygame.time.get_ticks() + 2000); ganador = None
+                beat = generar_beat(pygame.time.get_ticks(), pygame.time.get_ticks() + 1000); ganador = None
             elif ev.type == pygame.KEYDOWN and not ganador and beat:
                 if abs(ahora - beat.t_objetivo) <= VENTANA_MS or ahora < beat.t_objetivo:
                     ok = ev.key == TECLAS_PYGAME[beat.tecla]
@@ -64,7 +64,7 @@ def main():
 
         if precision:
             ronda(caballos, precision)
-            beat = generar_beat(ahora + INTERVALO_MS)
+            beat = generar_beat(ahora, ahora + INTERVALO_MS)
             llegaron = [c for c in caballos if c.llego]
             if llegaron:
                 ganador = llegaron[0]         # TODO (P4): desempate si llegan 2 a la vez
