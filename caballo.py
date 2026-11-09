@@ -1,4 +1,3 @@
-"""Un caballo = una Moore + un AFD. Une los dos autómatas (sin pygame)."""
 import random
 from moore import Moore
 from afd import AFD
@@ -15,7 +14,7 @@ class Caballo:
         self.ultima_precision = None
 
     def jugar(self, precision):
-        """precision -> Moore -> AFD. Devuelve metros (salida de la Moore)."""
+        """ejecuta los autómatas de velocidad y posición, devuelve cuanto se mueve"""
         self.ultima_precision = precision
         salida = self.moore.paso(precision)
         self.afd.paso(salida)

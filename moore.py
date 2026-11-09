@@ -1,7 +1,6 @@
-"""Máquina de Moore del caballo. PERSONA 1.
-
-Pura: NO importa pygame ni usa tiempo. Entrada: 'F','M','B','E'.
-Salida (función g del estado): 0, 1, 2, 3 o 'R'.
+"""Máquina de Moore, define velocidad del caballo según precisión del input
+Entrada: 'F','M','B','E'.
+Salida: 0, 1, 2, 3 o 'R'.
 """
 
 from automata.fa.dfa import DFA
@@ -16,7 +15,6 @@ NOMBRES = {
     "q4": "Perdido",
 }
 
-# f: Q x ΣE -> Q  (copiada de la tabla del informe; VERIFICAR contra JFLAP)
 TRANSICION = {
     "q0": {"F": "q4", "M": "q0", "B": "q1", "E": "q2"},
     "q1": {"F": "q0", "M": "q0", "B": "q1", "E": "q2"},
@@ -25,7 +23,6 @@ TRANSICION = {
     "q4": {"F": "q4", "M": "q4", "B": "q0", "E": "q1"},
 }
 
-# g: Q -> ΣS
 SALIDA = {"q0": 0, "q1": 1, "q2": 2, "q3": 3, "q4": "R"}
 
 
@@ -62,5 +59,3 @@ class Moore:
         self.historial += entrada
         self.estado = self.dfa.read_input(self.historial)
         return self.salida
-
-    # TODO (Persona 1): lo que haga falta para animar (ej. velocidad de frames por estado)

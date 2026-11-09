@@ -1,9 +1,8 @@
-"""Generación de beats (teclas pedidas). PERSONA 3."""
+"""Generación de beats"""
 import random
 from dataclasses import dataclass
 
-TECLAS = ("LEFT", "UP", "RIGHT", "DOWN")  # nombres; juego.py los mapea a pygame.K_*
-
+TECLAS = ("LEFT", "UP", "RIGHT", "DOWN")
 
 @dataclass
 class Beat:
@@ -18,4 +17,4 @@ def generar_beat(t_creacion, t_objetivo, rng=random):
                 t_creacion=t_creacion,
                 t_objetivo=t_objetivo)
 
-# TODO (Persona 3): dificultad (intervalo variable), anillo que se achica, etc.
+# TODO (P3): intervalos de beat variabls

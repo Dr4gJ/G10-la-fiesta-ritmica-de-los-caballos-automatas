@@ -1,15 +1,10 @@
-"""Loop principal e integración. PERSONA 4.
-
-Flujo por beat: input -> precision.evaluar -> Caballo.jugar (Moore -> AFD) -> ui.
-Cada beat resuelto del jugador avanza una "ronda" para TODOS los caballos
-(los bots generan su precisión con Caballo.precision_bot()).
-"""
 import pygame
 import ui
 from beats import generar_beat
 from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
+NOMBRE_JUEGO = "¡La Fiesta Rítmica de los Caballos Autómatas!"
 LARGO_PISTA = 40
 INTERVALO_MS = 1000          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
@@ -34,7 +29,7 @@ def ronda(caballos, precision_jugador):
 def main():
     pygame.init()
     pantalla = pygame.display.set_mode((ui.ANCHO, ui.ALTO))
-    pygame.display.set_caption("Carrera de caballos - Autómatas")
+    pygame.display.set_caption(NOMBRE_JUEGO)
     reloj = pygame.time.Clock()
 
     caballos = nueva_carrera()

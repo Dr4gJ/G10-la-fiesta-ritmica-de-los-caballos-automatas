@@ -1,8 +1,4 @@
-"""Precisión rítmica. PERSONA 3.
-
-Convierte el timing del jugador en 'F'|'M'|'B'|'E'. Tiempos en milisegundos.
-Los umbrales son ajustables: documentar los finales en el informe.
-"""
+"""Define timings e intervalos de los beats"""
 
 UMBRAL_E = 35    # |error| <= E ms  -> Excelente
 UMBRAL_B = 80    # <= B ms        -> Bueno

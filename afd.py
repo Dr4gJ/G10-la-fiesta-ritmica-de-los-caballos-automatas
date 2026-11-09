@@ -1,11 +1,7 @@
-"""AFD de la meta. PERSONA 2.
-
-Pura: NO importa pygame. Estados q0..q{largo}; final = q{largo}.
-Entrada: salida de la Moore (0, 1, 2, 3, 'R').
-Regla (equivale a la tabla del informe): pos + avance, tope en la meta;
-'R' retrocede 1 sin bajar de 0; la meta es absorbente.
+"""AFD control de posición del caballo
+Estados q0..q{largo}; final = q{largo}.
+Entrada: salida de autómata de Moore (0, 1, 2, 3, 'R').
 """
-
 from automata.fa.dfa import DFA
 
 SIMBOLOS = ("R", "0", "1", "2", "3")
