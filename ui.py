@@ -1,15 +1,14 @@
-"""Dibujo (PERSONA 1: sprites/animación del caballo; PERSONA 2: pista y HUD;
-PERSONA 3: beat y feedback). Solo LEE el estado, no lo modifica.
-Versión inicial con rectángulos; reemplazar por sprites después.
-"""
 import pygame
+import sprites
+import pathlib
 
 ANCHO, ALTO = 900, 600
 MARGEN_X = 80
+INICIO_X, FIN_X = 170, ANCHO - 60
 COLOR_FONDO = (30, 120, 50)
 COLORES_FEEDBACK = {"E": (5, 235, 5), "B": (120, 220, 120), "M": (240, 160, 60), "F": (230, 60, 60)}
 TEXTO_FEEDBACK = {"E": "¡Excelente!", "B": "Bueno", "M": "Malo", "F": "Fallo"}
-VECTOR_FLECHAS = {  # direcciones usadas para dibujar la flecha del botón
+VECTOR_FLECHAS = { # para dibujar las flechas
     "UP": {
         "puntos": lambda cx, cy: [(cx, cy - 18), (cx - 14, cy + 8), (cx + 14, cy + 8)],
         "rect": lambda cx, cy: (cx - 5, cy + 6, 10, 12)
@@ -28,39 +27,89 @@ VECTOR_FLECHAS = {  # direcciones usadas para dibujar la flecha del botón
     }
 }
 
+_fondo_img = None
+
+def _fondo():
+    global _fondo_img
+    if _fondo_img is None:
+        ruta = pathlib.Path(__file__).parent / "assets" / "fondo.png"
+        try:
+            img = pygame.image.load(ruta).convert()
+            _fondo_img = pygame.transform.smoothscale(img, (ANCHO, ALTO))
+        except (FileNotFoundError, pygame.error):
+            _fondo_img = pygame.Surface((ANCHO, ALTO))
+            _fondo_img.fill(COLOR_FONDO)
+    return _fondo_img
+
+def _profundidad(caballos):
+    """[(caballo, alto, y_pie)] de atrás hacia adelante; el jugador queda último."""
+    orden = [c for c in caballos if c.bot] + [c for c in caballos if not c.bot]
+    n = len(orden)
+    res = []
+    for i, c in enumerate(orden):
+        t = i / (n - 1) if n > 1 else 1      # 0 = fondo, 1 = frente
+        alto = int(64 + 64 * t)               # 64 (bot del fondo) .. 128 (jugador)
+        y_pie = int(260 + 140 * t)            # 260 .. 400
+        res.append((c, alto, y_pie))
+    return res
+
 
 def x_de_posicion(pos, largo):
-    """Casillero -> x en pantalla. TODO (P2): interpolar para movimiento suave."""
-    ancho_pista = ANCHO - 2 * MARGEN_X - 60
-    return MARGEN_X + ancho_pista * pos / largo
+    return INICIO_X + (FIN_X - INICIO_X) * pos / largo
 
 
 def dibujar_pista(pantalla, caballos, largo):
-    pantalla.fill(COLOR_FONDO)
-    carril_h = 70
-    for i in range(largo + 1):
-        x = x_de_posicion(i, largo)
-        pygame.draw.line(pantalla, (255, 255, 255), (x, 100), (x, 100 + carril_h * len(caballos)), 1)
-    pygame.draw.line(pantalla, (255, 255, 255), (x_de_posicion(largo, largo), 100),
-                     (x_de_posicion(largo, largo), 100 + carril_h * len(caballos)), 5)
-    for i, c in enumerate(caballos):
-        dibujar_caballo(pantalla, c, 100 + i * carril_h + 10, largo)
+    pantalla.blit(_fondo(), (0, 0))
+    x_meta = int(x_de_posicion(largo, largo))
+    pygame.draw.line(pantalla, (255, 255, 255), (x_meta, 200), (x_meta, 430), 4)
+    for c, alto, y_pie in _profundidad(caballos):
+        dibujar_caballo(pantalla, c, alto, y_pie, largo)
+
+COLOR_ETIQUETA_JUGADOR = (20, 50, 170)   # azul oscuro
+COLOR_ETIQUETA_BOT = (40, 40, 40)        # gris oscuro
 
 
-def dibujar_caballo(pantalla, caballo, y, largo):
-    """TODO (P1): sprite según caballo.moore.estado y animación."""
-    x = x_de_posicion(caballo.afd.posicion, largo)
-    pygame.draw.rect(pantalla, caballo.color, (x, y, 50, 40))
-    fuente = pygame.font.SysFont(None, 22)
+_fuentes = {}
+
+
+def _fuente(tam):
+    if tam not in _fuentes:
+        _fuentes[tam] = pygame.font.SysFont(None, tam)
+    return _fuentes[tam]
+
+
+def _etiqueta(pantalla, texto, x, y, fondo, borde=None, tam=22, pad=(12, 6), centrado=False):
+    img = _fuente(tam).render(texto, True, (255, 255, 255))
+    rect = img.get_rect(midtop=(x, y)) if centrado else img.get_rect(topleft=(x, y))
+    rect = rect.inflate(*pad)
+    pygame.draw.rect(pantalla, fondo, rect, border_radius=8)
+    if borde:
+        pygame.draw.rect(pantalla, borde, rect, 2, border_radius=8)
+    pantalla.blit(img, img.get_rect(center=rect.center))
+
+def dibujar_caballo(pantalla, caballo, alto, y_pie, largo):
+    color = caballo.color if caballo.bot else None
+    img = sprites.sprite(caballo.moore.estado, color, alto,
+                         desfase=hash(caballo.nombre) % 300)
+    x = int(x_de_posicion(caballo.afd.posicion, largo)) - img.get_width()  # nariz en x
+    y = y_pie - img.get_height()
+    pantalla.blit(img, (x, y))
+
     txt = f"{caballo.nombre}: {caballo.moore.nombre_estado}"
-    pantalla.blit(fuente.render(txt, True, (255, 255, 255)), (x, y - 16))
+    if caballo.bot:
+        _etiqueta(pantalla, txt, x, y - 22, COLOR_ETIQUETA_BOT)
+    else:
+        _etiqueta(pantalla, txt, x, y - 22, COLOR_ETIQUETA_JUGADOR, borde=(255, 215, 0))
+    
 
+def dibujar_cartel(pantalla, texto, y, fondo):
+    _etiqueta(pantalla, texto, ANCHO // 2, y, fondo, borde=(255, 255, 255),
+              tam=48, pad=(40, 24), centrado=True)
 
 def dibujar_hud(pantalla, jugador, largo):
-    """TODO (P2): estado y metros del jugador."""
-    fuente = pygame.font.SysFont(None, 28)
     txt = f"Estado: {jugador.moore.nombre_estado}  |  Casillero: {jugador.afd.posicion}/{largo}"
-    pantalla.blit(fuente.render(txt, True, (255, 255, 255)), (20, 20))
+    _etiqueta(pantalla, txt, 20, 20, COLOR_ETIQUETA_JUGADOR,
+              borde=(255, 215, 0), tam=28, pad=(16, 10))
 
 
 def dibujar_beat(pantalla, beat, ahora):

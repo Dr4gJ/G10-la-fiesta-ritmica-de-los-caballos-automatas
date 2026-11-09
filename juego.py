@@ -10,19 +10,19 @@ from beats import generar_beat
 from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
-LARGO_PISTA = 15
+LARGO_PISTA = 40
 INTERVALO_MS = 1000          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
 TECLAS_PYGAME = {"LEFT": pygame.K_LEFT, "UP": pygame.K_UP,
-                 "RIGHT": pygame.K_RIGHT, "DOWN": pygame.K_DOWN}
+                "RIGHT": pygame.K_RIGHT, "DOWN": pygame.K_DOWN}
 
 
 def nueva_carrera():
     return [
-        Caballo("Vos", (230, 230, 60), LARGO_PISTA),
-        Caballo("Bot 1", (230, 80, 80), LARGO_PISTA, bot=True, habilidad=0.4),
-        Caballo("Bot 2", (80, 120, 230), LARGO_PISTA, bot=True, habilidad=0.6),
-        Caballo("Bot 3", (80, 230, 120), LARGO_PISTA, bot=True, habilidad=0.7)
+        Caballo("Usuario", (0,0,0), LARGO_PISTA),
+        Caballo("Bot 1", (149, 52, 235), LARGO_PISTA, bot=True, habilidad=0.4),
+        Caballo("Bot 2", (255, 51, 187), LARGO_PISTA, bot=True, habilidad=0.6),
+        Caballo("Bot 3", (51, 238, 255), LARGO_PISTA, bot=True, habilidad=0.7)
     ]
 
 
@@ -72,7 +72,8 @@ def main():
         ui.dibujar_pista(pantalla, caballos, LARGO_PISTA)
         ui.dibujar_hud(pantalla, jugador, LARGO_PISTA)
         if ganador:
-            ui.dibujar_texto_centrado(pantalla, f"¡Ganó {ganador.nombre}!  (R para reiniciar)", 300)
+            fondo = (30, 130, 60) if not ganador.bot else (150, 30, 30)   # verde si ganás, rojo si no
+            ui.dibujar_cartel(pantalla, f"¡Ganó {ganador.nombre}!  (R para reiniciar)", 300, fondo)
         else:
             ui.dibujar_beat(pantalla, beat, ahora)
         ui.dibujar_feedback(pantalla, jugador.ultima_precision)
