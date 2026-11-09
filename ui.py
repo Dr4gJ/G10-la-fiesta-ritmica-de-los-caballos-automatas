@@ -7,8 +7,26 @@ import pygame
 ANCHO, ALTO = 900, 600
 MARGEN_X = 80
 COLOR_FONDO = (30, 120, 50)
-COLORES_FEEDBACK = {"E": (255, 215, 0), "B": (120, 220, 120), "M": (240, 160, 60), "F": (230, 60, 60)}
+COLORES_FEEDBACK = {"E": (5, 235, 5), "B": (120, 220, 120), "M": (240, 160, 60), "F": (230, 60, 60)}
 TEXTO_FEEDBACK = {"E": "¡Excelente!", "B": "Bueno", "M": "Malo", "F": "Fallo"}
+VECTOR_FLECHAS = {  # direcciones usadas para dibujar la flecha del botón
+    "UP": {
+        "puntos": lambda cx, cy: [(cx, cy - 18), (cx - 14, cy + 8), (cx + 14, cy + 8)],
+        "rect": lambda cx, cy: (cx - 5, cy + 6, 10, 12)
+    },
+    "DOWN": {
+        "puntos": lambda cx, cy: [(cx, cy + 18), (cx - 14, cy - 8), (cx + 14, cy - 8)],
+        "rect": lambda cx, cy: (cx - 5, cy - 18, 10, 12)
+    },
+    "LEFT": {
+        "puntos": lambda cx, cy: [(cx - 18, cy), (cx + 8, cy - 14), (cx + 8, cy + 14)],
+        "rect": lambda cx, cy: (cx + 6, cy - 5, 12, 10)
+    },
+    "RIGHT": {
+        "puntos": lambda cx, cy: [(cx + 18, cy), (cx - 8, cy - 14), (cx - 8, cy + 14)],
+        "rect": lambda cx, cy: (cx - 18, cy - 5, 12, 10)
+    }
+}
 
 
 def x_de_posicion(pos, largo):
@@ -46,23 +64,47 @@ def dibujar_hud(pantalla, jugador, largo):
 
 
 def dibujar_beat(pantalla, beat, ahora):
-    """TODO (P3): círculo que se achica hasta t_objetivo."""
+    """círculo que se achica hasta t_objetivo."""
     if beat is None:
         return
-    restante = beat.t_objetivo - ahora
-    radio = max(10, min(80, 10 + restante // 8))
-    pygame.draw.circle(pantalla, (255, 255, 255), (ANCHO // 2, 520), radio, 3)
-    fuente = pygame.font.SysFont(None, 36)
-    pantalla.blit(fuente.render(beat.tecla, True, (255, 255, 255)), (ANCHO // 2 - 30, 508))
 
+    centro = (ANCHO // 2, 520)
+    radio_objetivo = 35  # radio circulo interno
+    
+    # Calcular el progreso temporal entre 0.0 (nació) y 1.0 (llegó al objetivo)
+    tiempo_total = beat.t_objetivo - beat.t_creacion
+    transcurrido = ahora - beat.t_creacion
+    
+    if tiempo_total > 0:
+        progreso = max(0.0, min(1.0, transcurrido / tiempo_total))
+    else:
+        progreso = 1.0
+
+    radio_inicial = 100
+    radio_actual = int(radio_inicial - (radio_inicial - radio_objetivo) * progreso)
+
+    pygame.draw.circle(pantalla, (200, 200, 200), centro, radio_actual, 3) # circulo exterior
+    
+    pygame.draw.circle(pantalla, (50, 50, 50), centro, radio_objetivo) # circulo central con tecla
+    pygame.draw.circle(pantalla, (255, 255, 255), centro, radio_objetivo, 2)
+
+    cx, cy = centro
+    cfg = VECTOR_FLECHAS[beat.tecla]
+    color_flecha = (255, 255, 255)
+    pygame.draw.polygon(pantalla, color_flecha, cfg["puntos"](cx, cy))
+    pygame.draw.rect(pantalla, color_flecha, cfg["rect"](cx, cy))
 
 def dibujar_feedback(pantalla, precision):
     if precision is None:
         return
     fuente = pygame.font.SysFont(None, 48)
     img = fuente.render(TEXTO_FEEDBACK[precision], True, COLORES_FEEDBACK[precision])
-    pantalla.blit(img, (ANCHO // 2 - img.get_width() // 2, 440))
+    sombra = fuente.render(TEXTO_FEEDBACK[precision], True, (0, 0, 0))
 
+    x = ANCHO // 2 - img.get_width() // 2
+    y = 440
+    pantalla.blit(sombra, (x + 2, y + 2))
+    pantalla.blit(img, (x, y))
 
 def dibujar_texto_centrado(pantalla, texto, y, tam=48):
     fuente = pygame.font.SysFont(None, tam)

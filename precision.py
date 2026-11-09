@@ -4,9 +4,9 @@ Convierte el timing del jugador en 'F'|'M'|'B'|'E'. Tiempos en milisegundos.
 Los umbrales son ajustables: documentar los finales en el informe.
 """
 
-UMBRAL_E = 50    # |error| <= 50 ms  -> Excelente
-UMBRAL_B = 150   # <= 150 ms        -> Bueno
-UMBRAL_M = 300   # <= 300 ms        -> Malo
+UMBRAL_E = 35    # |error| <= E ms  -> Excelente
+UMBRAL_B = 80    # <= B ms        -> Bueno
+UMBRAL_M = 140   # <= M ms        -> Malo
                  # más que eso o tecla incorrecta -> Fallo
 
 

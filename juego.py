@@ -10,8 +10,8 @@ from beats import generar_beat
 from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
-LARGO_PISTA = 8
-INTERVALO_MS = 1200          # tiempo entre beats
+LARGO_PISTA = 15
+INTERVALO_MS = 1000          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
 TECLAS_PYGAME = {"LEFT": pygame.K_LEFT, "UP": pygame.K_UP,
                  "RIGHT": pygame.K_RIGHT, "DOWN": pygame.K_DOWN}
@@ -22,6 +22,7 @@ def nueva_carrera():
         Caballo("Vos", (230, 230, 60), LARGO_PISTA),
         Caballo("Bot 1", (230, 80, 80), LARGO_PISTA, bot=True, habilidad=0.4),
         Caballo("Bot 2", (80, 120, 230), LARGO_PISTA, bot=True, habilidad=0.6),
+        Caballo("Bot 3", (80, 230, 120), LARGO_PISTA, bot=True, habilidad=0.7)
     ]
 
 
@@ -38,8 +39,8 @@ def main():
 
     caballos = nueva_carrera()
     jugador = caballos[0]
-    t0 = pygame.time.get_ticks() + 2000       # TODO (P4): cuenta regresiva
-    beat = generar_beat(t0)
+    t0 = pygame.time.get_ticks() + 2000 # TODO (P4): cuenta regresiva
+    beat = generar_beat(t0, t0 + INTERVALO_MS) 
     ganador = None
     corriendo = True
 
@@ -52,7 +53,7 @@ def main():
                 corriendo = False
             elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_r and ganador:
                 caballos = nueva_carrera(); jugador = caballos[0]
-                beat = generar_beat(pygame.time.get_ticks() + 2000); ganador = None
+                beat = generar_beat(pygame.time.get_ticks(), pygame.time.get_ticks() + 1000); ganador = None
             elif ev.type == pygame.KEYDOWN and not ganador and beat:
                 if abs(ahora - beat.t_objetivo) <= VENTANA_MS or ahora < beat.t_objetivo:
                     ok = ev.key == TECLAS_PYGAME[beat.tecla]
@@ -63,7 +64,7 @@ def main():
 
         if precision:
             ronda(caballos, precision)
-            beat = generar_beat(ahora + INTERVALO_MS)
+            beat = generar_beat(ahora, ahora + INTERVALO_MS)
             llegaron = [c for c in caballos if c.llego]
             if llegaron:
                 ganador = llegaron[0]         # TODO (P4): desempate si llegan 2 a la vez
