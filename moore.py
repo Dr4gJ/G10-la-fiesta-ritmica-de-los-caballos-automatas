@@ -4,6 +4,8 @@ Pura: NO importa pygame ni usa tiempo. Entrada: 'F','M','B','E'.
 Salida (función g del estado): 0, 1, 2, 3 o 'R'.
 """
 
+from automata.fa.dfa import DFA
+
 ENTRADAS = ("F", "M", "B", "E")
 
 NOMBRES = {
@@ -29,25 +31,36 @@ SALIDA = {"q0": 0, "q1": 1, "q2": 2, "q3": 3, "q4": "R"}
 
 class Moore:
     def __init__(self):
-        self.estado = "q0"
+        self.dfa = DFA(
+            states = set(NOMBRES.keys()),
+            input_symbols = set(ENTRADAS),
+            transitions = TRANSICION,
+            initial_state = "q0",
+            final_states = set(NOMBRES.keys())
+        )
+        self.reset()
 
-    def reset(self):
-        self.estado = "q0"
+    def reset(self): 
+        self.estado = self.dfa.initial_state
+        self.historial = ""
 
     @property
     def nombre_estado(self):
+        "Devuelve el nombre del estado actual"
         return NOMBRES[self.estado]
 
     @property
     def salida(self):
-        """Salida del estado actual (Moore: depende solo del estado)."""
+        "Salida g(q) del estado actual"
         return SALIDA[self.estado]
 
-    def step(self, entrada):
-        """Consume 'F'|'M'|'B'|'E', pasa al nuevo estado y devuelve su salida."""
-        if entrada not in ENTRADAS:
-            raise ValueError(f"Entrada inválida: {entrada!r}")
-        self.estado = TRANSICION[self.estado][entrada]
+    def paso(self, entrada): 
+        "'F'|'M'|'B'|'E'| mediante automata-lib y devuelve la salida del nuevo estado"
+        if entrada not in self.dfa.input_symbols:
+            raise ValueError(f"Entrada invalida: {entrada!r}")
+
+        self.historial += entrada
+        self.estado = self.dfa.read_input(self.historial)
         return self.salida
 
     # TODO (Persona 1): lo que haga falta para animar (ej. velocidad de frames por estado)

@@ -6,44 +6,61 @@ Regla (equivale a la tabla del informe): pos + avance, tope en la meta;
 'R' retrocede 1 sin bajar de 0; la meta es absorbente.
 """
 
-SIMBOLOS = ("R", 0, 1, 2, 3)
+from automata.fa.dfa import DFA
+
+SIMBOLOS = ("R", "0", "1", "2", "3")
 
 
 class AFD:
-    def __init__(self, largo=8):
+    def __init__(self, largo = 8):
         self.largo = largo
-        self.pos = 0
+        estados = {f"q{i}" for i in range(largo + 1)}
+        transiciones = {f"q{p}" : {s: f"q{self._delta(p, s)}" for s in SIMBOLOS}
+                        for p in range(largo + 1)
+                        }
+
+        self.dfa = DFA(
+            states = estados,
+            input_symbols = set(SIMBOLOS),
+            transitions = transiciones,
+            initial_state = "q0",
+            final_states = {f"q{largo}"}
+        )
+
+        self.reset()
 
     def reset(self):
-        self.pos = 0
+        self._estado = self.dfa.initial_state
+        self.historial = ""
 
     @property
     def estado(self):
-        return f"q{self.pos}"
+        return self._estado
 
     @property
     def posicion(self):
-        return self.pos
+        return int(self._estado[1:])
 
     def aceptado(self):
-        return self.pos == self.largo
+        "Evalua si la secuencia de entradas llego al estado final"
+        return self.dfa.accepts_input(self.historial)
 
     def _delta(self, pos, simbolo):
-        if simbolo not in SIMBOLOS:
-            raise ValueError(f"Símbolo inválido: {simbolo!r}")
         if pos == self.largo:
             return pos
         if simbolo == "R":
             return max(0, pos - 1)
-        return min(self.largo, pos + simbolo)
+        return min(self.largo, pos + int(simbolo))
 
-    def step(self, simbolo):
-        self.pos = self._delta(self.pos, simbolo)
-        return self.pos
+    def paso(self, simbolo): 
+        simbolo_str = str(simbolo)
+        if simbolo_str not in self.dfa.input_symbols:
+            raise ValueError(f"Simbolo invalido: {simbolo!r}")
+
+        self.historial += simbolo_str
+        self._estado = self.dfa.transitions[self._estado][simbolo_str]
+        return self.posicion
 
     def tabla(self):
-        """{estado: {simbolo: estado}} para comparar con el informe."""
-        return {
-            f"q{p}": {s: f"q{self._delta(p, s)}" for s in SIMBOLOS}
-            for p in range(self.largo + 1)
-        }
+        "Devuelve la tabla de transiciones generada en el DFA"
+        return dict(self.dfa.transitions)

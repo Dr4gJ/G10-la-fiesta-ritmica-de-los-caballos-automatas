@@ -17,8 +17,8 @@ class Caballo:
     def jugar(self, precision):
         """precision -> Moore -> AFD. Devuelve metros (salida de la Moore)."""
         self.ultima_precision = precision
-        salida = self.moore.step(precision)
-        self.afd.step(salida)
+        salida = self.moore.paso(precision)
+        self.afd.paso(salida)
         return salida
 
     def precision_bot(self, rng=random):
