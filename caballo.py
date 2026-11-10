@@ -12,11 +12,13 @@ class Caballo:
         self.moore = Moore()
         self.afd = AFD(largo)
         self.ultima_precision = None
+        self.ultimo_movimiento = 0
 
     def jugar(self, precision):
         """ejecuta los autómatas de velocidad y posición, devuelve cuanto se mueve"""
         self.ultima_precision = precision
         salida = self.moore.paso(precision)
+        self.ultimo_movimiento = salida
         self.afd.paso(salida)
         return salida
 
@@ -40,3 +42,4 @@ class Caballo:
         self.moore.reset()
         self.afd.reset()
         self.ultima_precision = None
+        self.ultimo_movimiento = 0

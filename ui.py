@@ -155,6 +155,19 @@ def dibujar_feedback(pantalla, precision):
     pantalla.blit(sombra, (x + 2, y + 2))
     pantalla.blit(img, (x, y))
 
+def dibujar_cuenta_regresiva(pantalla, numero):
+    """Muestra un número grande o mensaje para la cuenta regresiva antes de empezar."""
+    fuente = pygame.font.SysFont(None, 120)
+    texto = str(numero) if numero > 0 else "¡YA!"
+    color = (255, 215, 0) if numero > 0 else (50, 255, 50)
+    
+    img = fuente.render(texto, True, color)
+    sombra = fuente.render(texto, True, (0, 0, 0))
+    x = ANCHO // 2 - img.get_width() // 2
+    y = 200
+    pantalla.blit(sombra, (x + 4, y + 4))
+    pantalla.blit(img, (x, y))
+
 def dibujar_texto_centrado(pantalla, texto, y, tam=48):
     fuente = pygame.font.SysFont(None, tam)
     img = fuente.render(texto, True, (255, 255, 255))
