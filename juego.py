@@ -7,7 +7,7 @@ from caballo import Caballo
 from precision import evaluar, UMBRAL_M
 
 NOMBRE_JUEGO = "¡La Fiesta Rítmica de los Caballos Autómatas!"
-LARGO_PISTA = 10
+LARGO_PISTA = 40
 INTERVALO_MS = 1000          # tiempo entre beats
 VENTANA_MS = UMBRAL_M        # pasado este tiempo sin tecla -> Fallo
 TECLAS_PYGAME = {"LEFT": pygame.K_LEFT, "UP": pygame.K_UP,
